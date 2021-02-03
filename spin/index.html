@@ -1,32 +1,24 @@
 <html lang="en">
     <head>
         <title>Spin</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width">
         <style>
-            @media screen and (max-width: 470px) {
-            }
-
             body {
                 font-family: arial,serif;
             }
 
             .container {
                 width: 100%;
-                align-items: center;
             }
 
-            table {
-                border: none;
-                border-collapse: collapse;
+            .container > div {
+                text-align: center;
+                margin-bottom: 5px;
                 width: 100%;
             }
 
-            td {
-                padding-top: 30px;
-            }
-
-            .wheel {
-                background-image: url(./wheel_back.png);
+            .pointer {
+                background-image: url(./pointer.png);
                 background-position: bottom;
                 background-repeat: no-repeat;
             }
@@ -35,6 +27,11 @@
                 font-weight:bold;
                 font-size: 36px;
                 padding: 10px 20px;
+                margin: auto;
+            }
+
+            #answer-ctrl {
+                text-align: center;
             }
 
             #answer {
@@ -47,85 +44,115 @@
     </head>
     <body>
         <div class="container">
-            <table>
-                <tr>
-                    <td width="470" height="630" class="wheel" align="center">
-                        <canvas id="canvas" width="470" height="580">
-                            Please try another browser
-                        </canvas>
-                    </td>
-                </tr>
-                <tr>
-                    <td align="center">
-                        <button onClick="spin()" id="btn-spin">SPIN!</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td align="center">
-                        <button style="display: none" onClick="revealAnswer()" id="btn-answer">Show Answer</button>
-                        <span id="answer"></span>
-                    </td>
-                </tr>
-            </table>
+            <div>
+                <div>
+                    <canvas id="canvas" height="475px">
+                        Please try another browser
+                    </canvas>
+                </div>
+                <div>
+                    <img src="./pointer.png"/>
+                </div>
+            </div>
+            <div>
+                <button onClick="wheel.spin()" id="btn-spin">SPIN!</button>
+            </div>
+            <div id="answer-ctrl" style="display: none;">
+                <button onClick="wheel.revealAnswer()" id="btn-answer">Show Answer</button>
+                <span id="answer"></span>
+            </div>
         </div>
         <script>
-            let theWheel = new Winwheel({
-                'numSegments'       : 12,
-                'drawMode'          : 'image',
-                'drawText'          : false,
-                'segments'          : [
-                   {'text' : '2'},
-                   {'text' : '1'},
-                   {'text' : '9'},
-                   {'text' : '5'},
-                   {'text' : '2'},
-                   {'text' : '7'},
-                   {'text' : '4'},
-                   {'text' : '6'},
-                   {'text' : '4'},
-                   {'text' : '3'},
-                   {'text' : '0'},
-                   {'text' : '7'}
-                ], 'animation' : {
-                    'type'     : 'spinToStop',
-                    'duration' : 5,
-                    'spins'    : 8,
-                    'callbackFinished' : finished
+            let wheel = (function(){
+                const spinBtn = document.getElementById("btn-spin");
+                const answerCtrl = document.getElementById("answer-ctrl");
+                const answerBtn = document.getElementById("btn-answer");
+                const answerText = document.getElementById("answer");
+
+                let theWheel = undefined;
+                
+                function spin() {
+                    theWheel.stopAnimation(false);
+                    theWheel.rotationAngle = 0;
+                    theWheel.draw();
+                    theWheel.startAnimation();
+                    spinBtn.disabled=true;
+                    answerCtrl.style.display='none';
                 }
-            });
+                window.spin = spin;
 
-            let loadedImg = new Image();
+                function finished(indicatedSegment) {
+                    answerText.innerText = indicatedSegment.text;
+                    spinBtn.disabled=false;
+                    answerBtn.style.display='block';
+                    answerCtrl.style.display='block';
+                    answerText.style.display='none';
+                }
 
-            loadedImg.onload = function() {
-                theWheel.wheelImage = loadedImg;
-                theWheel.draw();
-            }
+                function revealAnswer() {
+                    answerText.style.display='block';
+                    answerBtn.style.display='none';
+                }
+                window.revealAnswer = revealAnswer;
+                
+                return {
+                    setup: function() {
+                        theWheel = new Winwheel({
+                            'numSegments'       : 12,
+                            'drawMode'          : 'image',
+                            'drawText'          : false,
+                            'segments'          : [
+                               {'text' : '2'},
+                               {'text' : '1'},
+                               {'text' : '9'},
+                               {'text' : '5'},
+                               {'text' : '2'},
+                               {'text' : '7'},
+                               {'text' : '4'},
+                               {'text' : '6'},
+                               {'text' : '4'},
+                               {'text' : '3'},
+                               {'text' : '0'},
+                               {'text' : '7'}
+                            ], 'animation' : {
+                                'type'     : 'spinToStop',
+                                'duration' : 5,
+                                'spins'    : 8,
+                                'callbackFinished' : finished
+                            }
+                        });
 
-            loadedImg.src = "wheel.png";
-            const spinButton = document.getElementById("btn-spin");
-            const answerButton = document.getElementById("btn-answer");
-            const answer = document.getElementById("answer");
+                        let loadedImg = new Image();
 
-            function spin() {
-                theWheel.stopAnimation(false);
-                theWheel.rotationAngle = 0;
-                theWheel.draw();
-                theWheel.startAnimation();
-                spinButton.disabled=true;
-                answerButton.style.display='none';
-                answer.style.display='none';
-            }
+                        loadedImg.onload = function() {
+                            theWheel.wheelImage = loadedImg;
+                            theWheel.draw();
+                        }
 
-            function finished(indicatedSegment) {
-                answer.innerText = indicatedSegment.text;
-                spinButton.disabled=false;
-                answerButton.style.display='block';
-            }
+                        loadedImg.src = "wheel.png";
+                    },
+                    spin: spin,
+                    revealAnswer: revealAnswer
+                }
+            })();
 
-            function revealAnswer() {
-                answerButton.style.display='none';
-                answer.style.display='block';
-            }
+            (function() {
+                var canvas = document.getElementById('canvas'),
+                context = canvas.getContext('2d');
+
+                // resize the canvas to fill browser window dynamically
+                window.addEventListener('resize', resizeCanvas, false);
+
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth - 20;
+                    drawStuff();
+                }
+                resizeCanvas();
+
+                function drawStuff() {
+                    wheel.setup()
+                }
+            })();
         </script>
     </body>
 </html>
