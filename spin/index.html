@@ -1,22 +1,40 @@
-<html>
+<html lang="en">
     <head>
         <title>Spin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-            body { font-family: arial; }
+            @media screen and (max-width: 470px) {
+            }
+
+            body {
+                font-family: arial,serif;
+            }
+
+            .container {
+                width: 100%;
+                align-items: center;
+            }
 
             table {
                 border: none;
+                border-collapse: collapse;
+                width: 100%;
             }
 
-            .the_wheel {
+            td {
+                padding-top: 30px;
+            }
+
+            .wheel {
                 background-image: url(./wheel_back.png);
-                background-position: center;
-                background-repeat: none;
+                background-position: bottom;
+                background-repeat: no-repeat;
             }
 
-            #spin_button, #answer_button {
+            #btn-spin, #btn-answer {
                 font-weight:bold;
-                font-size: 26px;
+                font-size: 36px;
+                padding: 10px 20px;
             }
 
             #answer {
@@ -28,23 +46,23 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     </head>
     <body>
-        <div align="center">
+        <div class="container">
             <table>
                 <tr>
-                    <td width="460" height="578" class="the_wheel" align="center" valign="center">
-                        <canvas id="canvas" width="470" height="578">
+                    <td width="470" height="580" class="wheel" align="center" valign="center">
+                        <canvas id="canvas" width="470" height="580">
                             Please try another browser
                         </canvas>
                     </td>
                 </tr>
                 <tr>
                     <td align="center">
-                        <button onClick="spin()" id="spin_button">SPIN!</button>
+                        <button onClick="spin()" id="btn-spin">SPIN!</button>
                     </td>
                 </tr>
                 <tr>
                     <td align="center">
-                        <button style="display: none" onClick="revealAnswer()" id="answer_button">Show Answer</button>
+                        <button style="display: none" onClick="revealAnswer()" id="btn-answer">Show Answer</button>
                         <span id="answer"></span>
                     </td>
                 </tr>
@@ -84,8 +102,8 @@
             }
 
             loadedImg.src = "wheel.png";
-            const spinButton = document.getElementById("spin_button");
-            const answerButton = document.getElementById("answer_button");
+            const spinButton = document.getElementById("btn-spin");
+            const answerButton = document.getElementById("btn-answer");
             const answer = document.getElementById("answer");
 
             function spin() {
