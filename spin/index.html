@@ -4,10 +4,24 @@
         <style>
             body { font-family: arial; }
 
-            td.the_wheel {
+            table {
+                border: none;
+            }
+
+            .the_wheel {
                 background-image: url(./wheel_back.png);
                 background-position: center;
                 background-repeat: none;
+            }
+
+            #spin_button, #answer_button {
+                font-weight:bold;
+                font-size: 26px;
+            }
+
+            #answer {
+                font-size: 36px;
+                font-weight: bold;
             }
         </style>
         <script type="text/javascript" src="./Winwheel.min.js"></script>
@@ -15,17 +29,23 @@
     </head>
     <body>
         <div align="center">
-            <table cellpadding="0" cellspacing="0" border="0">
+            <table>
                 <tr>
                     <td width="460" height="578" class="the_wheel" align="center" valign="center">
                         <canvas id="canvas" width="470" height="578">
-                            <p style="{color: white}" align="center">Sorry, your browser doesn't support canvas. Please try another.</p>
+                            Please try another browser
                         </canvas>
                     </td>
                 </tr>
                 <tr>
                     <td align="center">
-                        <button style="font-weight:bold; font-size: 26px;" onClick="spin()" id="spin_button">SPIN!</button>
+                        <button onClick="spin()" id="spin_button">SPIN!</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center">
+                        <button style="display: none" onClick="revealAnswer()" id="answer_button">Show Answer</button>
+                        <span id="answer"></span>
                     </td>
                 </tr>
             </table>
@@ -36,18 +56,18 @@
                 'drawMode'          : 'image',
                 'drawText'          : false,
                 'segments'          : [
-                   {'text' : '1'},
                    {'text' : '2'},
-                   {'text' : '3'},
-                   {'text' : '4'},
-                   {'text' : '5'},
-                   {'text' : '6'},
-                   {'text' : '7'},
-                   {'text' : '8'},
+                   {'text' : '1'},
                    {'text' : '9'},
-                   {'text' : '10'},
-                   {'text' : '11'},
-                   {'text' : '12'}
+                   {'text' : '5'},
+                   {'text' : '2'},
+                   {'text' : '7'},
+                   {'text' : '4'},
+                   {'text' : '6'},
+                   {'text' : '4'},
+                   {'text' : '3'},
+                   {'text' : '0'},
+                   {'text' : '7'}
                 ], 'animation' : {
                     'type'     : 'spinToStop',
                     'duration' : 5,
@@ -64,7 +84,9 @@
             }
 
             loadedImg.src = "wheel.png";
-            var spinButton = document.getElementById("spin_button");
+            const spinButton = document.getElementById("spin_button");
+            const answerButton = document.getElementById("answer_button");
+            const answer = document.getElementById("answer");
 
             function spin() {
                 theWheel.stopAnimation(false);
@@ -72,11 +94,19 @@
                 theWheel.draw();
                 theWheel.startAnimation();
                 spinButton.disabled=true;
+                answerButton.style.display='none';
+                answer.style.display='none';
             }
 
             function finished(indicatedSegment) {
-                // alert("The wheel stopped on " + indicatedSegment.text);
+                answer.innerText = indicatedSegment.text;
                 spinButton.disabled=false;
+                answerButton.style.display='block';
+            }
+
+            function revealAnswer() {
+                answerButton.style.display='none';
+                answer.style.display='block';
             }
         </script>
     </body>
